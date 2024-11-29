@@ -66,8 +66,8 @@ jobs:
 
       - name: rename kernel
         run: |
-          cp WSL2-Linux-Kernel/vmlinux ${{ matrix.branch }}-vmlinux
-          cp WSL2-Linux-Kernel/vmlinux ${{ env.kernel_version }}-vmlinux
+          cp WSL2-Linux-Kernel/arch/x86/boot/bzImage ${{ matrix.branch }}-bzImage
+          cp WSL2-Linux-Kernel/arch/x86/boot/bzImage ${{ env.kernel_version }}-bzImage
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
@@ -76,15 +76,16 @@ jobs:
             modules_headers.tar.xz
             ${{ matrix.branch }}-modules_headers.tar.xz
             ${{ env.kernel_version }}-modules_headers.tar.xz
-            WSL2-Linux-Kernel/vmlinux
-            ${{ matrix.branch }}-vmlinux
-            ${{ env.kernel_version }}-vmlinux
+
+            WSL2-Linux-Kernel/arch/x86/boot/bzImage
+            ${{ matrix.branch }}-bzImage
+            ${{ env.kernel_version }}-bzImage
 
       - name: Publish release
         uses: ncipollo/release-action@v1
         with:
           prerelease: false
-          artifacts: ${{ matrix.branch }}-vmlinux,${{ env.kernel_version }}-vmlinux,${{ matrix.branch }}-modules_headers.tar.xz,${{ env.kernel_version }}-modules_headers.tar.xz
+          artifacts: ${{ matrix.branch }}-bzImage,${{ env.kernel_version }}-bzImage,${{ matrix.branch }}-modules_headers.tar.xz,${{ env.kernel_version }}-modules_headers.tar.xz
           replacesArtifacts: true
           tag: ${{ env.release_tag }}
           name: wsl custom kernel builds
