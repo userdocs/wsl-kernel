@@ -34,8 +34,10 @@ jobs:
         run: docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) INSTALL_MOD_PATH=modules_headers modules_install INSTALL_HDR_PATH=modules_headers headers_install
 
       - name: archive kernel modules and headers
+        run: cd WSL2-Linux-Kernel/modules_headers && tar -cvJf ${{ github.workspace }}/modules_headers.tar.xz *
+
+      - name: rename kernel modules and headers
         run: |
-          cd WSL2-Linux-Kernel/modules_headers && tar -cvJf ${{ github.workspace }}/modules_headers.tar.xz *
           cp modules_headers.tar.xz ${{ matrix.branch }}-modules_headers.tar.xz
           cp modules_headers.tar.xz ${{ env.kernel_version }}-modules_headers.tar.xz
 
