@@ -1,4 +1,4 @@
-name: dcb docker build and release
+name: wsl kernel builder - build and publish
 
 on:
   workflow_dispatch:
@@ -58,7 +58,7 @@ jobs:
           file: Dockerfile
           push: true
           no-cache: true
-          tags: ${{ env.REGISTRY }}/wsl-build
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:wsl-build
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Attest
