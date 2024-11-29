@@ -59,7 +59,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           prerelease: false
-          artifacts: ${{ matrix.branch }}-vmlinux,${{ env.kernel_version }}-vmlinux
+          artifacts: ${{ matrix.branch }}-vmlinux,${{ env.kernel_version }}-vmlinux,${{ matrix.branch }}-modules_headers.tar.xz,${{ env.kernel_version }}-modules_headers.tar.xz
           replacesArtifacts: true
           tag: ${{ env.release_tag }}
           name: wsl custom kernel builds
