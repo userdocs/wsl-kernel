@@ -1,0 +1,52 @@
+name: wsl kernel build
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch:
+          - linux-msft-wsl-6.6.y
+          - linux-msft-wsl-5.15.y
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Clone branch
+        run: git clone https://github.com/microsoft/WSL2-Linux-Kernel.git --depth=1 -b linux-msft-wsl-6.6.y
+
+      - name: build kernel
+        run: |
+          cd WSL2-Linux-Kernel
+          make -j$(nproc) KCONFIG_CONFIG=${{ github.workspace }}/configs/${{ matrix.branch }}/config-wsl
+          make modules_install headers_install
+
+          printf '%s' "kernel_version=$(sed -rn 's/^VERSION = (.*)/\1/p' Makefile).$(sed -rn 's/^PATCHLEVEL = (.*)/\1/p' Makefile).$(sed -rn 's/^SUBLEVEL = (.*)/\1/p' Makefile)$(sed -rn 's/^EXTRAVERSION = (.*)/\1/p' Makefile)" >> $GITHUB_ENV
+          printf '%s' "release_tag=$(date +"%d%m")" >> $GITHUB_ENV
+
+      - name: rename kernel
+        run: |
+          cp WSL2-Linux-Kernel/vmlinux ${{ matrix.branch }}-vmlinux
+          cp WSL2-Linux-Kernel/vmlinux ${{ env.kernel_version }}-vmlinux
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: |
+            WSL2-Linux-Kernel/vmlinux
+            ${{ matrix.branch }}-vmlinux
+            ${{ env.kernel_version }}-vmlinux
+
+      - name: Publish release
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: false
+          artifacts: ${{ matrix.branch }}-vmlinux,${{ env.kernel_version }}-vmlinux
+          replacesArtifacts: true
+          tag: ${{ env.release_tag }}
+          name: wsl custom kernel builds
+          allowUpdates: true
+          token: ${{ github.token }}
