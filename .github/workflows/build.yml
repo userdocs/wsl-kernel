@@ -15,17 +15,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Host - docker builder
+        run: docker run --name builder -it -d -u 1001 -v ${{ github.workspace }}:/home/github ghcr.io/userdocs/wsl-kernel:latest
+
       - name: Clone branch
-        run: git clone https://github.com/microsoft/WSL2-Linux-Kernel.git --depth=1 -b linux-msft-wsl-6.6.y
+        run: git clone --depth=1 -b "${{ matrix.branch }}" https://github.com/microsoft/WSL2-Linux-Kernel.git WSL2-Linux-Kernel
 
-      - name: build kernel
+      - name: Set variables
+        working-directory: WSL2-Linux-Kernel
         run: |
-          cd WSL2-Linux-Kernel
-          make -j$(nproc) KCONFIG_CONFIG=${{ github.workspace }}/configs/${{ matrix.branch }}/config-wsl
-          make modules_install headers_install
-
           printf '%s' "kernel_version=$(sed -rn 's/^VERSION = (.*)/\1/p' Makefile).$(sed -rn 's/^PATCHLEVEL = (.*)/\1/p' Makefile).$(sed -rn 's/^SUBLEVEL = (.*)/\1/p' Makefile)$(sed -rn 's/^EXTRAVERSION = (.*)/\1/p' Makefile)" >> $GITHUB_ENV
           printf '%s' "release_tag=$(date +"%d%m")" >> $GITHUB_ENV
+
+      - name: make kernel
+        run: |
+          docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) KCONFIG_CONFIG=${{ github.workspace }}/configs/${{ matrix.branch }}/config-wsl
+
+      - name: make kernel modules headers
+        run: |
+          docker exec -w /home/github/WSL2-Linux-Kernel builder make modules_install headers_install
 
       - name: rename kernel
         run: |
