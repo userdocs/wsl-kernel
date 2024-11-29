@@ -28,12 +28,16 @@ jobs:
           printf '%s' "release_tag=$(date +"%d%m")" >> $GITHUB_ENV
 
       - name: make kernel
-        run: |
-          docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) KCONFIG_CONFIG=/home/github/configs/${{ matrix.branch }}/config-wsl
+        run: docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) KCONFIG_CONFIG=/home/github/configs/${{ matrix.branch }}/config-wsl
 
-      - name: make kernel modules headers
+      - name: make kernel modules and headers
+        run: docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) INSTALL_MOD_PATH=modules_headers modules_install INSTALL_HDR_PATH=modules_headers headers_install
+
+      - name: archive kernel modules and headers
         run: |
-          docker exec -w /home/github/WSL2-Linux-Kernel builder make modules_install headers_install
+          cd WSL2-Linux-Kernel/modules_headers && tar -cvJf ${{ github.workspace }}/modules_headers.tar.xz *
+          cp modules_headers.tar.xz ${{ matrix.branch }}-modules_headers.tar.xz
+          cp modules_headers.tar.xz ${{ env.kernel_version }}-modules_headers.tar.xz
 
       - name: rename kernel
         run: |
@@ -44,6 +48,9 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: |
+            modules_headers.tar.xz
+            ${{ matrix.branch }}-modules_headers.tar.xz
+            ${{ env.kernel_version }}-modules_headers.tar.xz
             WSL2-Linux-Kernel/vmlinux
             ${{ matrix.branch }}-vmlinux
             ${{ env.kernel_version }}-vmlinux
