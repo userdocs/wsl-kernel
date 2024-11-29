@@ -29,7 +29,7 @@ jobs:
 
       - name: make kernel
         run: |
-          docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) KCONFIG_CONFIG=${{ github.workspace }}/configs/${{ matrix.branch }}/config-wsl
+          docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) KCONFIG_CONFIG=/home/github/configs/${{ matrix.branch }}/config-wsl
 
       - name: make kernel modules headers
         run: |
