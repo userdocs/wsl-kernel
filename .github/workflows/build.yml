@@ -47,8 +47,8 @@ jobs:
       - name: Set variables
         working-directory: WSL2-Linux-Kernel
         run: |
-          printf '%s' "kernel_version=$(sed -rn 's/^VERSION = (.*)/\1/p' Makefile).$(sed -rn 's/^PATCHLEVEL = (.*)/\1/p' Makefile).$(sed -rn 's/^SUBLEVEL = (.*)/\1/p' Makefile)$(sed -rn 's/^EXTRAVERSION = (.*)/\1/p' Makefile)" >> $GITHUB_ENV
-          printf '%s' "release_tag=$(date +"%d%m")" >> $GITHUB_ENV
+          printf '%s\n' "kernel_version=$(sed -rn 's/^VERSION = (.*)/\1/p' Makefile).$(sed -rn 's/^PATCHLEVEL = (.*)/\1/p' Makefile).$(sed -rn 's/^SUBLEVEL = (.*)/\1/p' Makefile)$(sed -rn 's/^EXTRAVERSION = (.*)/\1/p' Makefile)" >> $GITHUB_ENV
+          printf '%s\n' "release_tag=$(date +"%d%m")" >> $GITHUB_ENV
 
       - name: make kernel
         run: docker exec -w /home/github/WSL2-Linux-Kernel builder make -j$(nproc) KCONFIG_CONFIG=/home/github/configs/${{ matrix.branch }}/config-wsl
