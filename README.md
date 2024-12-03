@@ -6,7 +6,7 @@ Context: https://github.com/microsoft/WSL2-Linux-Kernel/releases/tag/linux-msft-
 
 We are taking the default x86 `/arch/x86/configs/config-wsl` for a given branch and doing these things.
 
-- Changing `=m` to `=y` as dynamic modules don;t load in custom kernels.
+- Changing `=m` to `=y` as dynamic modules don't load in custom kernels.
 - Making sure `CONFIG_NETFILTER_XT_MATCH_CONNMARK=y` `CONFIG_NETFILTER_XT_CONNMARK=y` are set for wireguard
 - Making sure docker desktop requirements are configured to `=y` - https://github.com/microsoft/WSL/issues/11742#issuecomment-2272557613
 
