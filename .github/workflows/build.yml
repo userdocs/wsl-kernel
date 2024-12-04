@@ -70,7 +70,7 @@ jobs:
           cp WSL2-Linux-Kernel/arch/x86/boot/bzImage ${{ env.kernel_version }}-bzImage
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
             modules_headers.tar.xz
