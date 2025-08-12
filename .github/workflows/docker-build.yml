@@ -35,7 +35,7 @@ jobs:
     name: wsl-build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -79,7 +79,7 @@ jobs:
     env:
       GH_TOKEN: "${{ github.TOKEN }}"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Trigger rerun workflow on job failures
         run: |
           inputs_retries="${{ inputs.retries }}"

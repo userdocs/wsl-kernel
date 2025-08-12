@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Host - docker builder
         run: docker run --name builder -it -d -u 1001 -v ${{ github.workspace }}:/home/github ghcr.io/userdocs/wsl-kernel:latest
@@ -102,7 +102,7 @@ jobs:
     env:
       GH_TOKEN: "${{ github.TOKEN }}"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Trigger rerun workflow on job failures
         run: |
           inputs_retries="${{ inputs.retries }}"
